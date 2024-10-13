@@ -1,25 +1,17 @@
-const http = require('node:http');
-const url = require('node:url');
-const fs = require('node:fs');
+const express = require("express");
+const path = require("path");
+const app = express();
 
-http.createServer((req, res) => {
-    const q = url.parse(req.url, true);
-    let fileName;
 
-    if(q.pathname === '/') {
-        fileName = `./index.html`
-    } else {
-        fileName = `.${q.pathname}.html`
-    }
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-    fs.readFile(fileName, (err, data) => {
-        if(err) {
-            res.writeHead(404, {'Content-Type': 'text/html'});
-            res.write(fs.readFileSync('./404.html'))
-            res.end();
-        }
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(data);
-        res.end();
-    })
-}).listen(8080);
+app.get("/about", (req, res) => res.sendFile(path.join(__dirname, './about.html')));
+
+app.get("/contact-me", (req, res) => res.sendFile(path.join(__dirname, './contact-me.html')));
+
+app.get("/*", (req, res) => res.sendFile(path.join(__dirname, './404.html')));
+
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT);
